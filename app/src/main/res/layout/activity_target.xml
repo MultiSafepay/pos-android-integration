@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TargetActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Callback Activity"
+        android:textColor="@color/design_default_color_primary_variant"
+        android:gravity="center"
+        android:padding="20dp"
+        android:textStyle="bold"
+        android:textSize="22sp"
+
+        ></TextView>
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Callback Activity"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_marginTop="60dp"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:textSize="18sp"
+
+        ></TextView>
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Callback Activity"
+        android:textColor="@color/teal_200"
+        android:gravity="center"
+        android:padding="10dp"
+        android:textStyle="bold"
+        android:textSize="14sp"
+
+        ></TextView>
+
+</LinearLayout>

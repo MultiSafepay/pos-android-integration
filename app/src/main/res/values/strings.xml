@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">POSClientApp</string>
+    <string name="err">Transaction Error!</string>
+    <string name="success">Transaction completed!</string>
+    <string name="cancelled">Transaction casncelled!</string>
+    <string name="declined">Transaction declined!</string>
+    <string name="pending">Pending...</string>
+</resources>
