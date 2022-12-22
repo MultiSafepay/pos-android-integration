@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Using Intent to call MSP Pay App"
+        android:layout_marginTop="40dp"
+        android:padding="20dp"
+        android:textSize="18sp"
+        android:textColor="@color/design_default_color_primary_dark"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/checkout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="PaymentActivity"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:padding="20dp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:textSize="20sp"
+        ></Button>
+
+   <!-- <TextView
+        android:id="@+id/transaction_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Transaction status:"
+        android:layout_marginTop="30dp"
+        android:padding="10dp"
+        android:textSize="22sp"
+        android:textColor="@color/design_default_color_primary_dark"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/transaction_status_callback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_marginTop="0dp"
+        android:padding="10dp"
+        android:textSize="24sp"
+        android:textColor="@color/design_default_color_primary_dark"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"/>-->
+
+</LinearLayout>
