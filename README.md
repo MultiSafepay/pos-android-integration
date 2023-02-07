@@ -35,6 +35,7 @@
 
 ### a.2 Calling Multisafepay Pay App from 3rd party App ###
 
+
 ``` 
 
          //Intent intent = this.context.getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.nokernels");
