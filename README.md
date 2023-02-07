@@ -33,7 +33,8 @@
 
 ``` 
 
-### a.2 Calling Multisafepay Pay App ###
+### a.2 Calling Multisafepay Pay App from 3rd party App ###
+
 
 ``` 
 
@@ -48,6 +49,16 @@
                intent.putExtra("package_name", this.context.getPackageName()); // Callback packagename
                this.context.startActivity(intent);
            }
+
+``` 
+
+### a.3 Calling Multisafepay Pay App via deep-link - Using Webhook ###
+
+``` 
+
+        
+    msp://?amount=123&order_id=123xyz&callback=http://192.168.xx.xx/notification_url=https://www.example.com/paymentnotification/?order_id={$order_id}&status={$status}
+
 
 ``` 
 
