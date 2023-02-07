@@ -43,7 +43,7 @@
  
             if (intent != null) {
                intent.putExtra("items", jsonArray.toString()); // Order items
-               intent.putExtra("order_id", "POSPayApp: " + Math.random()); //Math.random for testing ONLY
+               intent.putExtra("order_id", getOrderId()); //getOrderId() for testing ONLY, for PRODUCTION place here your order_id
                intent.putExtra("order_description", "info about the order");
                intent.putExtra("currency", "EUR");
                intent.putExtra("package_name", this.context.getPackageName()); // Callback packagename
@@ -54,11 +54,11 @@
 
 ### a.3 Calling Multisafepay Pay App via deep-link - Using Webhook ###
 
+####  Merchant/Partner will make a call by deep-link (schema is "msp") like so:
+
 ``` 
 
-        
-    msp://?amount=123&order_id=123xyz&callback=http://192.168.xx.xx/notification_url=https://www.example.com/paymentnotification/?order_id={$order_id}&status={$status}
-
+msp://?amount={$amount}&order_id={$order_id}&callback={$callback_url}&notification_url={$notification_url}
 
 ``` 
 
@@ -69,33 +69,23 @@ try {
             jsonArray = new JSONArray();
             JSONObject jsonObject;
  
-            {
+             {
                 jsonObject = new JSONObject();
                 jsonObject.put("name", "Product 1");
-                jsonObject.put("unit_price", "28.40");
+                jsonObject.put("unit_price", "0.10");
                 jsonObject.put("quantity", "1");
                 jsonObject.put("merchant_item_id", "749857");
                 jsonObject.put("tax", "3.90");
                 jsonArray.put(jsonObject);
             }
- 
+
             {
                 jsonObject = new JSONObject();
                 jsonObject.put("name", "Product 2");
-                jsonObject.put("unit_price", "20");
-                jsonObject.put("quantity", "10");
+                jsonObject.put("unit_price", "0.20");
+                jsonObject.put("quantity", "1");
                 jsonObject.put("merchant_item_id", "749857");
                 jsonObject.put("tax", "1.40");
-                jsonArray.put(jsonObject);
-            }
- 
-            {
-                jsonObject = new JSONObject();
-                jsonObject.put("name", "Product 3");
-                jsonObject.put("unit_price", "10");
-                jsonObject.put("quantity", "4");
-                jsonObject.put("merchant_item_id", "749857");
-                jsonObject.put("tax", "0.40");
                 jsonArray.put(jsonObject);
             }
  
