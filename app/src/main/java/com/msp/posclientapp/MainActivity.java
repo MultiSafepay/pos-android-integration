@@ -1,16 +1,13 @@
 package com.msp.posclientapp;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-
-import org.json.JSONArray;
-
-public class MainActivity extends AppCompatActivity implements IProduct {
+public class MainActivity extends AppCompatActivity {
 
     private Product product;
     private Button checkout;
@@ -26,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements IProduct {
         //transactionStatus = findViewById(R.id.transaction_status_callback);
         //transactionStatus.setText(R.string.pending);
         checkout = findViewById(R.id.checkout);
-
         //Press button and proceed to checkout.
         checkout.setOnClickListener(view -> checkout());
     }
@@ -44,27 +40,6 @@ public class MainActivity extends AppCompatActivity implements IProduct {
 
         Intent intent = new Intent(this, PaymentActivity.class);
         startActivity(intent);
-    }
-
-    @Override
-    public void callMSPPayApp(JSONArray basket) {
-        Intent intent = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.nokernels");
-        Log.d("DEBUGGING_INTENT", "intent: " +  intent);
-        if (intent != null) {
-            this.sendIntent(intent, basket);
-        }
-    }
-
-    private void sendIntent(Intent intent, JSONArray basket){
-        //Send intent to wake up Multisafepay Pay App
-        intent.putExtra("items", basket.toString());
-        intent.putExtra("order_id", "POSPayApp: " + Math.random());
-        intent.putExtra("order_description", "info about the order");
-        intent.putExtra("currency", "EUR");
-        intent.putExtra("package_name", this.getPackageName());
-
-        this.startActivity(intent);
-
     }
 
     private void processMSPMiddlewareResponse(@NonNull Intent intent) {

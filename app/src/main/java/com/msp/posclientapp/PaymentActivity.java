@@ -11,8 +11,9 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 
-public class PaymentActivity extends AppCompatActivity  implements IProduct {
+import java.util.Random;
 
+public class PaymentActivity extends AppCompatActivity  implements IProduct {
     private Product product;
     private Button checkout;
     private TextView transactionStatus, message;
@@ -63,7 +64,8 @@ public class PaymentActivity extends AppCompatActivity  implements IProduct {
 
     @Override
     public void callMSPPayApp(JSONArray basket) {
-        Intent intent = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.nokernels");
+        Intent intent = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
+        //Intent intent = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.nokernels");
         Log.d("DEBUGGING_INTENT", "intent: " +  intent);
         if (intent != null) {
             this.sendIntent(intent, basket);
@@ -73,7 +75,7 @@ public class PaymentActivity extends AppCompatActivity  implements IProduct {
     private void sendIntent(Intent intent, JSONArray basket){
         //Send intent to wake up Multisafepay Pay App
         intent.putExtra("items", basket.toString());
-        intent.putExtra("order_id", "POSPayApp: " + Math.random());
+        intent.putExtra("order_id", getOrderId());
         intent.putExtra("order_description", "info about the order");
         intent.putExtra("currency", "EUR");
         intent.putExtra("package_name", this.getPackageName());
@@ -81,6 +83,21 @@ public class PaymentActivity extends AppCompatActivity  implements IProduct {
         this.startActivity(intent);
 
     }
+
+    protected String getOrderId() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
+
+
 
     @Override
     public boolean onSupportNavigateUp() {
