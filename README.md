@@ -115,19 +115,19 @@ try {
    private void handleMiddlewareCallback(int status, String message) {
        switch (status) {
            case 875: {
-               this.showDialog("MSP Middleware EXCEPTION");
+               this.showDialog("EXCEPTION");
            }
            break;
            case 471: {
-               this.showDialog("MSP Middleware OK");
+               this.showDialog("COMPLETED");
            }
            break;
            case 17: {
-               this.showDialog("MSP Middleware CANCELLED");
+               this.showDialog("CANCELLED");
            }
            break;
            case 88: {
-               this.showDialog("MSP Middleware DECLINED");
+               this.showDialog("DECLINED");
            }
            break;
        }

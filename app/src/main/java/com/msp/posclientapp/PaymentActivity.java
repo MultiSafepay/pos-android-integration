@@ -53,7 +53,6 @@ public class PaymentActivity extends AppCompatActivity  implements IProduct {
     protected void onNewIntent(Intent intent) {
         //on waking up from callback process results
         //this intent is only called if target App (Pay App) is properly finalized.
-
         super.onNewIntent(intent);
     }
 
@@ -101,8 +100,6 @@ public class PaymentActivity extends AppCompatActivity  implements IProduct {
         return saltStr;
 
     }
-
-
 
     @Override
     public boolean onSupportNavigateUp() {

@@ -62,19 +62,19 @@ public class MainActivity extends AppCompatActivity{
     private void handleMiddlewareCallback(int status, String message) {
         switch (status) {
             case 875: {
-                this.receivedCallbackIntent(String.format("MSP Middleware EXCEPTION", message));
+                this.receivedCallbackIntent(String.format("EXCEPTION", message));
             }
             break;
             case 471: {
-                this.receivedCallbackIntent(String.format("MSP Middleware OK", message));
+                this.receivedCallbackIntent(String.format("COMPLETED", message));
             }
             break;
             case 17: {
-                this.receivedCallbackIntent(String.format("MSP Middleware CANCELLED", message));
+                this.receivedCallbackIntent(String.format("CANCELLED", message));
             }
             break;
             case 88: {
-                this.receivedCallbackIntent(String.format("MSP Middleware DECLINED", message));
+                this.receivedCallbackIntent(String.format("DECLINED", message));
             }
             break;
         }
