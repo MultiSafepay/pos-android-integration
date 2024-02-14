@@ -98,39 +98,49 @@ try {
 ``` 
 
  @Override
-   protected void onNewIntent(Intent intent) {
-       super.onNewIntent(intent);
-            
-       //on waking up from callback process results
-       //this intent is only called if target App (Pay App) is properly finalized.
-        
-           if (intent.hasExtra("status")) {
-           int status = intent.getIntExtra("status", 0);
-           String message = intent.getStringExtra("message");
-           this.handleMiddlewareCallback(status, message);
-       }
-   }
- 
-    
-   private void handleMiddlewareCallback(int status, String message) {
-       switch (status) {
-           case 875: {
-               this.showDialog("EXCEPTION");
-           }
-           break;
-           case 471: {
-               this.showDialog("COMPLETED");
-           }
-           break;
-           case 17: {
-               this.showDialog("CANCELLED");
-           }
-           break;
-           case 88: {
-               this.showDialog("DECLINED");
-           }
-           break;
-       }
-   }
+    protected void onNewIntent(Intent intent) {
+        //on waking up from callback process results
+        //this intent is only called if target App (Pay App) is properly finalized.
 
+        this.processMSPMiddlewareResponse(intent);
+        super.onNewIntent(intent);
+    }
+    
+    private void processMSPMiddlewareResponse(@NonNull Intent intent) {
+        //retrieve intent extra data including message.
+        if (intent.hasExtra("status")) {
+            int status = intent.getIntExtra("status", 0);
+            String message = intent.getStringExtra("message");
+            this.handleMiddlewareCallback(status, message);
+        }
+    }
+ 
+    private void handleMiddlewareCallback(int status, String message) {
+        switch (status) {
+            case 875: {
+                this.receivedCallbackIntent(String.format("EXCEPTION", message));
+            }
+            break;
+            case 471: {
+                this.receivedCallbackIntent(String.format("COMPLETED", message));
+            }
+            break;
+            case 17: {
+                this.receivedCallbackIntent(String.format("CANCELLED", message));
+            }
+            break;
+            case 88: {
+                this.receivedCallbackIntent(String.format("DECLINED", message));
+            }
+            break;
+        }
+        
+          private void receivedCallbackIntent(String message) {
+             Intent intent = new Intent(this, PaymentActivity.class);
+             intent.putExtra("message",message);
+             intent.putExtra("description","pass data to this Activity");
+              startActivity(intent);
+        }
+   }
+   
 ``` 
