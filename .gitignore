@@ -1,0 +1,33 @@
+# Ignore Android layout XML files
+app/src/main/res/layout/activity_calling.xml
+
+# Ignore Gradle cache files
+gradle/caches/
+gradle/daemon/
+gradle/journal-1/
+gradle/caches/modules-2/
+gradle/caches/transforms-3/
+gradle/caches/jars-9/
+
+gradle/android.lock
+gradle/native/
+gradle/wrapper/dists/
+
+.gradle/8.7/executionHistory/
+.gradle/buildOutputCleanup/
+gradle/daemon/8.7/
+
+# Gradle build and cache files
+.gradle/
+
+# IntelliJ IDEA/Android Studio project files
+.idea/
+
+# Ignore Gradle build output cleanup files
+.gradle/buildOutputCleanup/
+
+# Ignore IDE-specific gradle configuration
+.idea/gradle.xml
+
+# macOS system files
+.DS_Store
