@@ -26,7 +26,7 @@ public class Product {
                 jsonObject.put("unit_price", "0.10");
                 jsonObject.put("quantity", "1");
                 jsonObject.put("merchant_item_id", "749857");
-                jsonObject.put("tax", "3.90");
+                jsonObject.put("tax", "0.10");
                 jsonArray.put(jsonObject);
             }
 
@@ -36,7 +36,7 @@ public class Product {
                 jsonObject.put("unit_price", "0.20");
                 jsonObject.put("quantity", "1");
                 jsonObject.put("merchant_item_id", "749857");
-                jsonObject.put("tax", "1.40");
+                jsonObject.put("tax", "0.21");
                 jsonArray.put(jsonObject);
             }
 

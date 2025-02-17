@@ -43,12 +43,15 @@
 
            String packageName = intent.getPackage();
            intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
+
+           // NOTE: ‘Amount’ is required to process the transaction.
  
             if (intent != null) {
                intent.putExtra("items", jsonArray.toString()); // Order items
                intent.putExtra("order_id", getOrderId()); //getOrderId() for testing ONLY, for PRODUCTION place here your order_id
                intent.putExtra("order_description", "info about the order");
                intent.putExtra("currency", "EUR");
+               intent.putExtra("amount", amount);   // this is new from version v1.0.8
                intent.putExtra("package_name", this.context.getPackageName()); // Callback packagename
                this.context.startActivity(intent);
            }
@@ -142,5 +145,120 @@ try {
               startActivity(intent);
         }
    }
+
    
+``` 
+
+## New e-commerce flow ##
+
+pos-android-integration is the same as above.
+
+### a. Order items: ###
+
+``` 
+ try {
+            jsonArray = new JSONArray();
+
+            // First Item: Socks
+            JSONObject socks = new JSONObject();
+            socks.put("name", "Socks");
+            socks.put("description", "One pair of black socks");
+            socks.put("merchant_item_id", "001-M");
+            socks.put("unit_price", 0.105785124);
+            socks.put("quantity", 3);
+
+            //Note: If the shipping cost is taxed, add a tax_table_selector to the shipping item.
+            socks.put("tax_table_selector", "21_percent");
+
+            //TODO: Optional fields
+           /* JSONObject weight = new JSONObject();
+            weight.put("unit", "G");
+            weight.put("value", "120");
+            socks.put("weight", weight);*/
+
+            jsonArray.put(socks);
+
+            // Second Item: Shipping
+            JSONObject shipping = new JSONObject();
+            shipping.put("name", "Shipping");
+            shipping.put("description", "Domestic shipping (zone 1)");
+            shipping.put("merchant_item_id", "msp-shipping");
+            shipping.put("unit_price", 0.15);
+            shipping.put("quantity", 1);
+
+            jsonArray.put(shipping);
+
+
+        } catch (JSONException jsonException) {
+            Log.e("DEBUGGING_INTENT", "JSONException occurred: " + jsonException.getMessage());
+        }
+
+``` 
+
+
+### b. Calling Multisafepay Pay App from 3rd party App ###
+
+
+``` 
+           Intent intent = this.context.getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
+
+           String packageName = intent.getPackage();
+           intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
+
+           // Call the setCheckoutOptions method to set the checkout options
+                setCheckoutOptions(intent);
+
+           // NOTE: ‘Amount’ is required to process the transaction.
+ 
+            if (intent != null) {
+                intent.putExtra("items", basket.toString());
+                intent.putExtra("order_id", getOrderId());
+                intent.putExtra("description", "info about the order");
+                intent.putExtra("currency", "EUR");
+                intent.putExtra("amount", amount);
+                intent.putExtra("reference", "Ref-intent-1234-dani");
+                intent.putExtra("auto_close", false);
+                intent.putExtra("package_name", getPackageName());
+           }
+
+``` 
+
+### c. set checkout options method ###
+
+
+``` 
+    private void setCheckoutOptions(Intent intent) {
+        try {
+            JSONObject checkoutOptions = new JSONObject();
+
+            checkoutOptions.put("validate_cart", true);
+
+            JSONObject taxTables = new JSONObject();
+            checkoutOptions.put("tax_tables", taxTables);
+
+            JSONObject defaultTaxTable = new JSONObject();
+            defaultTaxTable.put("rate", 0);
+            taxTables.put("default", defaultTaxTable);
+
+            JSONArray alternateTaxTables = new JSONArray();
+            taxTables.put("alternate", alternateTaxTables);
+
+            JSONObject alternateTaxTable = new JSONObject();
+            alternateTaxTable.put("name", "_percent");
+            alternateTaxTables.put(alternateTaxTable);
+
+            JSONArray rules = new JSONArray();
+            alternateTaxTable.put("rules", rules);
+
+            JSONObject rule = new JSONObject();
+            rule.put("rate", 0.21);
+            rule.put("country", "NL");
+            rules.put(rule);
+
+            intent.putExtra("checkout_options", checkoutOptions.toString());
+        } catch (JSONException e) {
+            Log.e("DEBUGGING_INTENT", "Options JSONException occurred: " + e.getMessage());
+        }
+    }
+
 ``` 
