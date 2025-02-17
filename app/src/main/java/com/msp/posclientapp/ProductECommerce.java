@@ -22,8 +22,8 @@ public class ProductECommerce {
             socks.put("name", "Socks");
             socks.put("description", "One pair of black socks");
             socks.put("merchant_item_id", "001-M");
-            socks.put("unit_price", 0.105785124);
-            socks.put("quantity", 3);
+            socks.put("unit_price", "0.105785124");
+            socks.put("quantity", "3");
 
             //Note: If the shipping cost is taxed, add a tax_table_selector to the shipping item.
             socks.put("tax_table_selector", "21_percent");
@@ -41,8 +41,8 @@ public class ProductECommerce {
             shipping.put("name", "Shipping");
             shipping.put("description", "Domestic shipping (zone 1)");
             shipping.put("merchant_item_id", "msp-shipping");
-            shipping.put("unit_price", 0.15);
-            shipping.put("quantity", 1);
+            shipping.put("unit_price", "0.15");
+            shipping.put("quantity", "1");
 
             jsonArray.put(shipping);
 

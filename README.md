@@ -33,68 +33,7 @@
 
 ``` 
 
-### b. Calling Multisafepay Pay App from 3rd party App ###
-
-
-``` 
-
-         
-           Intent intent = this.context.getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
-
-           String packageName = intent.getPackage();
-           intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
-
-           // NOTE: ‘Amount’ is required to process the transaction.
- 
-            if (intent != null) {
-               intent.putExtra("items", jsonArray.toString()); // Order items
-               intent.putExtra("order_id", getOrderId()); //getOrderId() for testing ONLY, for PRODUCTION place here your order_id
-               intent.putExtra("order_description", "info about the order");
-               intent.putExtra("currency", "EUR");
-               intent.putExtra("amount", amount);   // this is new from version v1.0.8
-               intent.putExtra("package_name", this.context.getPackageName()); // Callback packagename
-               this.context.startActivity(intent);
-           }
-
-``` 
-
-### c. Order items: ###
-
-
-``` 
-try {
-            jsonArray = new JSONArray();
-            JSONObject jsonObject;
- 
-             {
-                jsonObject = new JSONObject();
-                jsonObject.put("name", "Product 1");
-                jsonObject.put("unit_price", "0.10");
-                jsonObject.put("quantity", "1");
-                jsonObject.put("merchant_item_id", "749857");
-                jsonObject.put("tax", "3.90");
-                jsonArray.put(jsonObject);
-            }
-
-            {
-                jsonObject = new JSONObject();
-                jsonObject.put("name", "Product 2");
-                jsonObject.put("unit_price", "0.20");
-                jsonObject.put("quantity", "1");
-                jsonObject.put("merchant_item_id", "749857");
-                jsonObject.put("tax", "1.40");
-                jsonArray.put(jsonObject);
-            }
- 
-        } catch (JSONException jsonException) {
-            jsonException.printStackTrace();
-        }
-}
-
-``` 
-
-
-### d. Process callback ###
+### b. Process callback ###
 
 [Click here](https://developer.android.com/reference/android/app/Activity.html#onNewIntent(android.content.Intent)) for onNewIntent reference.
 
@@ -149,9 +88,67 @@ try {
    
 ``` 
 
-## New e-commerce flow ##
+## Legacy App-to-App flow (non-e-commerce) ##
 
-pos-android-integration is the same as above.
+### a. Order items: ###
+
+``` 
+try {
+            jsonArray = new JSONArray();
+            JSONObject jsonObject;
+ 
+             {
+                jsonObject = new JSONObject();
+                jsonObject.put("name", "Product 1");
+                jsonObject.put("unit_price", "0.10");
+                jsonObject.put("quantity", "1");
+                jsonObject.put("merchant_item_id", "749857");
+                jsonObject.put("tax", "3.90");
+                jsonArray.put(jsonObject);
+            }
+
+            {
+                jsonObject = new JSONObject();
+                jsonObject.put("name", "Product 2");
+                jsonObject.put("unit_price", "0.20");
+                jsonObject.put("quantity", "1");
+                jsonObject.put("merchant_item_id", "749857");
+                jsonObject.put("tax", "1.40");
+                jsonArray.put(jsonObject);
+            }
+ 
+        } catch (JSONException jsonException) {
+            jsonException.printStackTrace();
+        }
+}
+
+``` 
+
+### b. Calling Multisafepay Pay App from 3rd party App ###
+
+``` 
+
+         
+           Intent intent = this.context.getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
+
+           String packageName = intent.getPackage();
+           intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
+
+           // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
+ 
+            if (intent != null) {
+               intent.putExtra("items", jsonArray.toString()); // Order items
+               intent.putExtra("order_id", getOrderId()); //getOrderId() for testing ONLY, for PRODUCTION place here your order_id
+               intent.putExtra("order_description", "info about the order");
+               intent.putExtra("currency", "EUR");
+               intent.putExtra("amount", amount);   // this is new from version v1.0.8
+               intent.putExtra("package_name", this.context.getPackageName()); // Callback packagename
+               this.context.startActivity(intent);
+           }
+
+``` 
+
+## New e-commerce flow ##
 
 ### a. Order items: ###
 
@@ -171,7 +168,7 @@ pos-android-integration is the same as above.
             socks.put("tax_table_selector", "21_percent");
 
             //TODO: Optional fields
-           /* JSONObject weight = new JSONObject();
+            /* JSONObject weight = new JSONObject();
             weight.put("unit", "G");
             weight.put("value", "120");
             socks.put("weight", weight);*/
@@ -195,9 +192,7 @@ pos-android-integration is the same as above.
 
 ``` 
 
-
 ### b. Calling Multisafepay Pay App from 3rd party App ###
-
 
 ``` 
            Intent intent = this.context.getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
@@ -208,7 +203,7 @@ pos-android-integration is the same as above.
            // Call the setCheckoutOptions method to set the checkout options
                 setCheckoutOptions(intent);
 
-           // NOTE: ‘Amount’ is required to process the transaction.
+            // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
  
             if (intent != null) {
                 intent.putExtra("items", basket.toString());
@@ -224,7 +219,6 @@ pos-android-integration is the same as above.
 ``` 
 
 ### c. set checkout options method ###
-
 
 ``` 
     private void setCheckoutOptions(Intent intent) {

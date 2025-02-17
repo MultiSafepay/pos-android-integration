@@ -91,6 +91,8 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     }
 
     private void sendIntent(Intent intent, JSONArray basket) {
+        // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
+        // For example: 0,61 should be 61L (in cents)
         Long amount = 61L; // replace with your actual amount
         if (!validateAmount(amount)) {
             return;
@@ -143,6 +145,8 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     }
 
     private void sendECommerceIntent(Intent intent, JSONArray basket) {
+        // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
+        // For example: 3,99 should be 399L (in cents)
         Long amount = 399L; // replace with your actual amount
         if (!validateAmount(amount)) {
             return;
