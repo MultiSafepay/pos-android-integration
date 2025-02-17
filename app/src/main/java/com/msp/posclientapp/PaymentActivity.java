@@ -1,6 +1,5 @@
 package com.msp.posclientapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -81,7 +80,6 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
             productECommerce.setProduct(this);
         }
     }
-
 
     @Override
     public void callMSPPayApp(JSONArray basket) {
@@ -211,5 +209,4 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         }
         return true;
     }
-
 }
