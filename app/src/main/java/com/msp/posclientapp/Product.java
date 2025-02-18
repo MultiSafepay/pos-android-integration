@@ -7,10 +7,8 @@ import org.json.JSONObject;
 public class Product {
 
     private JSONArray jsonArray;
-    private IProduct product;
 
     void setProduct (IProduct product){
-        this.product = product;
 
         //Hardcoded products, add as many as you want.
         //Pay attention to structure
