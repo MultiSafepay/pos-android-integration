@@ -2,7 +2,9 @@ package com.msp.posclientapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -23,6 +25,10 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     private Button checkout;
     private TextView transactionStatus, message;
     private Switch productToggle;
+    private Switch alertDialogToggle;
+
+    private static final String PREFS_NAME = "PaymentActivityPrefs";
+    private static final String ALERT_DIALOG_ENABLED_KEY = "alertDialogEnabled";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,11 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         checkout = findViewById(R.id.checkout);
         transactionStatus.setText(R.string.pending);
         message = findViewById(R.id.message);
+        alertDialogToggle = findViewById(R.id.alert_dialog_toggle);
+
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean isAlertDialogEnabled = prefs.getBoolean(ALERT_DIALOG_ENABLED_KEY, true);
+        alertDialogToggle.setChecked(isAlertDialogEnabled);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -59,6 +70,11 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
 
             message.setText(messageString);
             transactionStatus.setText(descriptionString);
+
+            // Show alert dialog only if the saved state is enabled
+            if (isAlertDialogEnabled) {
+                showAlertDialog(messageString, descriptionString);
+            }
         }
 
         // Press button and proceed to checkout.
@@ -81,6 +97,17 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         }
     }
 
+    // Method to show AlertDialog
+    private void showAlertDialog(String messageString, String descriptionString) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Payment Details")
+                .setMessage("Message: " + messageString + "\n\nDescription: " + descriptionString)
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false); // Prevent dismiss on outside touch
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
     @Override
     public void callMSPPayApp(JSONArray basket) {
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
@@ -91,6 +118,8 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     }
 
     private void sendIntent(Intent intent, JSONArray basket) {
+        // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
+        // For example: 0,61 should be 61L (in cents)
         Long amount = 61L; // replace with your actual amount
         if (!validateAmount(amount)) {
             return;
@@ -143,6 +172,8 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     }
 
     private void sendECommerceIntent(Intent intent, JSONArray basket) {
+        // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
+        // For example: 3,99 should be 399L (in cents)
         Long amount = 399L; // replace with your actual amount
         if (!validateAmount(amount)) {
             return;

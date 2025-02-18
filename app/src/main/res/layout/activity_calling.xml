@@ -25,6 +25,16 @@
         android:layout_gravity="center"
         android:text="@string/use_e_commerce_flow"/>
 
+    <Switch
+        android:id="@+id/alert_dialog_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="14dp"
+        android:text="Enable Alert Dialog"
+        android:checked="true"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     <Button
         android:id="@+id/checkout"
         android:layout_width="match_parent"

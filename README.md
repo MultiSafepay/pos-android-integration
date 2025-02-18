@@ -134,7 +134,7 @@ try {
            String packageName = intent.getPackage();
            intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
 
-           // NOTE: ‘Amount’ is required to process the transaction.
+           // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
  
             if (intent != null) {
                intent.putExtra("items", jsonArray.toString()); // Order items
@@ -203,7 +203,7 @@ try {
            // Call the setCheckoutOptions method to set the checkout options
                 setCheckoutOptions(intent);
 
-           // NOTE: ‘Amount’ is required to process the transaction.
+            // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
  
             if (intent != null) {
                 intent.putExtra("items", basket.toString());
