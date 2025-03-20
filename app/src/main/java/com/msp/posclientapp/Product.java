@@ -8,13 +8,10 @@ public class Product {
 
     private JSONArray jsonArray;
 
-    void setProduct (IProduct product){
-
-        //Hardcoded products, add as many as you want.
-        //Pay attention to structure
-
+    void setProduct(IProduct product, long amount) { // Add amount as a parameter
+        // Hardcoded products, add as many as you want.
+        // Pay attention to structure
         try {
-
             jsonArray = new JSONArray();
             JSONObject jsonObject;
 
@@ -38,11 +35,11 @@ public class Product {
                 jsonArray.put(jsonObject);
             }
 
-
         } catch (JSONException jsonException) {
             jsonException.printStackTrace();
         }
 
-        product.callMSPPayApp(jsonArray);
+        // Pass the user-entered amount to callMSPPayApp
+        product.callMSPPayApp(jsonArray, amount);
     }
 }

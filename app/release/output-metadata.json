@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 1,
-      "versionName": "25-12-01",
-      "outputFile": "msp_pay_app_25-12-01__release.apk"
+      "versionCode": 2,
+      "versionName": "25-12-02",
+      "outputFile": "msp_pay_app_25-12-02__release.apk"
     }
   ],
   "elementType": "File"

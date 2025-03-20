@@ -9,51 +9,37 @@ import org.json.JSONObject;
 public class ProductECommerce {
 
     private JSONArray jsonArray;
-    private IProduct product;
 
-    void setProduct(IProduct product) {
-        this.product = product;
-
+    void setProduct(IProduct product, long amount) { // Ensure amount is passed as a parameter
         try {
             jsonArray = new JSONArray();
+            JSONObject jsonObject;
 
-            // First Item: Socks
-            JSONObject socks = new JSONObject();
-            socks.put("name", "Socks");
-            socks.put("description", "One pair of black socks");
-            socks.put("merchant_item_id", "001-M");
-            socks.put("unit_price", "0.105785124");
-            socks.put("quantity", "3");
+            {
+                jsonObject = new JSONObject();
+                jsonObject.put("name", "E-Commerce Product 1");
+                jsonObject.put("unit_price", "0.10");
+                jsonObject.put("quantity", "1");
+                jsonObject.put("merchant_item_id", "749857");
+                jsonObject.put("tax", "0.10");
+                jsonArray.put(jsonObject);
+            }
 
-            //Note: If the shipping cost is taxed, add a tax_table_selector to the shipping item.
-            socks.put("tax_table_selector", "21_percent");
-
-            //TODO: Optional fields
-           /* JSONObject weight = new JSONObject();
-            weight.put("unit", "G");
-            weight.put("value", "120");
-            socks.put("weight", weight);*/
-
-            jsonArray.put(socks);
-
-            // Second Item: Shipping
-            JSONObject shipping = new JSONObject();
-            shipping.put("name", "Shipping");
-            shipping.put("description", "Domestic shipping (zone 1)");
-            shipping.put("merchant_item_id", "msp-shipping");
-            shipping.put("unit_price", "0.15");
-            shipping.put("quantity", "1");
-
-            jsonArray.put(shipping);
-
-            System.out.println(jsonArray);
-
+            {
+                jsonObject = new JSONObject();
+                jsonObject.put("name", "E-Commerce Product 2");
+                jsonObject.put("unit_price", "0.20");
+                jsonObject.put("quantity", "1");
+                jsonObject.put("merchant_item_id", "749857");
+                jsonObject.put("tax", "0.21");
+                jsonArray.put(jsonObject);
+            }
 
         } catch (JSONException jsonException) {
-            Log.e("DEBUGGING_INTENT", "JSONException occurred: " + jsonException.getMessage());
+            jsonException.printStackTrace();
         }
 
-        product.callMSPPayAppECommerce(jsonArray);
+        // Ensure the user-entered amount is passed here
+        product.callMSPPayAppECommerce(jsonArray, amount);
     }
-
 }

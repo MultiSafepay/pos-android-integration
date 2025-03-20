@@ -6,8 +6,10 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,12 +91,41 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     }
 
     private void checkout() {
-        // Checkout flow initialized.
-        if (product != null) {
-            product.setProduct(this);
-        } else if (productECommerce != null) {
-            productECommerce.setProduct(this);
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter Amount");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        input.setText("0.01"); // Default value
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", (dialog, which) -> {
+            String amountStr = input.getText().toString();
+            Log.d("DEBUG_AMOUNT", "Entered amount: " + amountStr); // Log the entered value
+
+            try {
+                double amount = Double.parseDouble(amountStr);
+                long amountInCents = (long) (amount * 100); // Convert to cents
+                Log.d("DEBUG_AMOUNT", "Amount in cents: " + amountInCents); // Log the converted value
+
+                if (validateAmount(amountInCents)) {
+                    if (product != null) {
+                        product.setProduct(this, amountInCents);
+                        callMSPPayApp(new JSONArray(), amountInCents); // Pass the amount
+                    } else if (productECommerce != null) {
+                        productECommerce.setProduct(this, amountInCents);
+                        callMSPPayAppECommerce(new JSONArray(), amountInCents); // Pass the amount
+                    }
+                } else {
+                    Toast.makeText(this, "Invalid amount entered!", Toast.LENGTH_SHORT).show();
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid number format!", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
     }
 
     // Method to show AlertDialog
@@ -109,18 +140,19 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     }
 
     @Override
-    public void callMSPPayApp(JSONArray basket) {
+    public void callMSPPayApp(JSONArray basket, long amount) {
+        Log.d("DEBUG_AMOUNT", "Calling MSP Pay App with amount: " + amount); // Log the amount
+
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
         Log.d("DEBUGGING_INTENT", "intent: " + intent);
         if (intent != null) {
-            sendIntent(intent, basket);
+            sendIntent(intent, basket, amount);
         }
     }
 
-    private void sendIntent(Intent intent, JSONArray basket) {
-        // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
-        // For example: 0,61 should be 61L (in cents)
-        Long amount = 61L; // replace with your actual amount
+    private void sendIntent(Intent intent, JSONArray basket, long amount) {
+        Log.d("DEBUG_AMOUNT", "Sending intent with amount: " + amount); // Log the amount
+
         if (!validateAmount(amount)) {
             return;
         }
@@ -128,9 +160,8 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         String packageName = intent.getPackage();
         intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
 
-        // Send intent to wake up Multisafepay Pay App
         intent.putExtra("items", basket.toString());
-        intent.putExtra("amount", amount); // Add total amount for product here...
+        intent.putExtra("amount", amount); // Use the amount entered by the user
         intent.putExtra("order_id", getOrderId());
         intent.putExtra("order_description", "info about the order");
         intent.putExtra("currency", "EUR");
@@ -163,18 +194,19 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
      */
 
     @Override
-    public void callMSPPayAppECommerce(JSONArray basket) {
+    public void callMSPPayAppECommerce(JSONArray basket, long amount) {
+        Log.d("DEBUG_AMOUNT", "Calling MSP Pay App E-Commerce with amount: " + amount); // Log the amount
+
         Intent intent = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
         Log.d("DEBUGGING_INTENT", "intent: " + intent);
         if (intent != null) {
-            sendECommerceIntent(intent, basket);
+            sendECommerceIntent(intent, basket, amount);
         }
     }
 
-    private void sendECommerceIntent(Intent intent, JSONArray basket) {
-        // Note: The field 'Amount' is required to process the transaction. The data type for 'Amount' should be long (L).
-        // For example: 3,99 should be 399L (in cents)
-        Long amount = 399L; // replace with your actual amount
+    private void sendECommerceIntent(Intent intent, JSONArray basket, long amount) {
+        Log.d("DEBUG_AMOUNT", "Sending e-commerce intent with amount: " + amount); // Log the amount
+
         if (!validateAmount(amount)) {
             return;
         }
@@ -182,15 +214,13 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         String packageName = intent.getPackage();
         intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
 
-        // Call the setCheckoutOptions method to set the checkout options
         setCheckoutOptions(intent);
 
-        Log.d("DEBUGGING_INTENT", "sendIntent basket: " + basket);
         intent.putExtra("items", basket.toString());
         intent.putExtra("order_id", getOrderId());
         intent.putExtra("description", "info about the order");
         intent.putExtra("currency", "EUR");
-        intent.putExtra("amount", amount);
+        intent.putExtra("amount", amount); // Use the passed amount
         intent.putExtra("reference", "Ref-intent-1234-dani");
         intent.putExtra("auto_close", false);
         intent.putExtra("package_name", getPackageName());
@@ -235,9 +265,11 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
 
     private boolean validateAmount(Long amount) {
         if (amount == null || amount <= 0) {
+            Log.d("DEBUG_AMOUNT", "Validation failed: Amount is missing or invalid!");
             Toast.makeText(this, "Amount is missing or invalid!", Toast.LENGTH_SHORT).show();
             return false;
         }
+        Log.d("DEBUG_AMOUNT", "Validation succeeded: Amount is valid!");
         return true;
     }
 }
