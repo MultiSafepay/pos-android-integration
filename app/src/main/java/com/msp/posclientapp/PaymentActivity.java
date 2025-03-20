@@ -6,7 +6,9 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -99,6 +101,57 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         input.setText("0.01"); // Default value
         builder.setView(input);
 
+        // Attach the TextWatcher here
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // No action needed
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // No action needed
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // Get the current input text
+                String inputText = s.toString();
+
+                // Allow the field to remain empty
+                if (inputText.isEmpty()) {
+                    return;
+                }
+
+                // Check if the input is "00" and convert it to "0.0"
+                if (inputText.equals("00")) {
+                    s.replace(0, s.length(), "0.0");
+                    return;
+                }
+
+                // Check if the input is "0" or "0." and allow it
+                if (inputText.equals("0") || inputText.equals("0.")) {
+                    return;
+                }
+
+                // Remove unnecessary leading zeros unless it starts with "0."
+                String formattedText = inputText.replaceFirst("^0+(?!\\.)", "");
+
+                // Enforce two decimal places if a decimal point exists
+                if (formattedText.contains(".")) {
+                    int indexOfDecimal = formattedText.indexOf(".");
+                    if (formattedText.length() > indexOfDecimal + 3) {
+                        formattedText = formattedText.substring(0, indexOfDecimal + 3); // Keep two digits after the decimal
+                    }
+                }
+
+                // Only replace the text if the formatted value differs
+                if (!formattedText.equals(inputText)) {
+                    s.replace(0, s.length(), formattedText);
+                }
+            }
+        });
+
         builder.setPositiveButton("OK", (dialog, which) -> {
             String amountStr = input.getText().toString();
             Log.d("DEBUG_AMOUNT", "Entered amount: " + amountStr); // Log the entered value
@@ -110,11 +163,9 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
 
                 if (validateAmount(amountInCents)) {
                     if (product != null) {
-                        product.setProduct(this, amountInCents);
-                        callMSPPayApp(new JSONArray(), amountInCents); // Pass the amount
+                        product.setProduct(this, amountInCents); // Pass amount to Product
                     } else if (productECommerce != null) {
-                        productECommerce.setProduct(this, amountInCents);
-                        callMSPPayAppECommerce(new JSONArray(), amountInCents); // Pass the amount
+                        productECommerce.setProduct(this, amountInCents); // Pass amount to ProductECommerce
                     }
                 } else {
                     Toast.makeText(this, "Invalid amount entered!", Toast.LENGTH_SHORT).show();
