@@ -2,7 +2,9 @@ package com.msp.posclientapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -23,6 +25,10 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
     private Button checkout;
     private TextView transactionStatus, message;
     private Switch productToggle;
+    private Switch alertDialogToggle;
+
+    private static final String PREFS_NAME = "PaymentActivityPrefs";
+    private static final String ALERT_DIALOG_ENABLED_KEY = "alertDialogEnabled";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,11 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         checkout = findViewById(R.id.checkout);
         transactionStatus.setText(R.string.pending);
         message = findViewById(R.id.message);
+        alertDialogToggle = findViewById(R.id.alert_dialog_toggle);
+
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean isAlertDialogEnabled = prefs.getBoolean(ALERT_DIALOG_ENABLED_KEY, true);
+        alertDialogToggle.setChecked(isAlertDialogEnabled);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -59,6 +70,11 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
 
             message.setText(messageString);
             transactionStatus.setText(descriptionString);
+
+            // Show alert dialog only if the saved state is enabled
+            if (isAlertDialogEnabled) {
+                showAlertDialog(messageString, descriptionString);
+            }
         }
 
         // Press button and proceed to checkout.
@@ -79,6 +95,17 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
         } else if (productECommerce != null) {
             productECommerce.setProduct(this);
         }
+    }
+
+    // Method to show AlertDialog
+    private void showAlertDialog(String messageString, String descriptionString) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Payment Details")
+                .setMessage("Message: " + messageString + "\n\nDescription: " + descriptionString)
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false); // Prevent dismiss on outside touch
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
     @Override
