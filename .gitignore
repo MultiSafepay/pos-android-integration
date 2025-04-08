@@ -13,6 +13,8 @@ gradle/android.lock
 gradle/native/
 gradle/wrapper/dists/
 
+app/release/*
+
 .gradle/8.7/executionHistory/
 .gradle/buildOutputCleanup/
 gradle/daemon/8.7/
