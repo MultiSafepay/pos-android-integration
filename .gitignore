@@ -12,6 +12,7 @@ gradle/caches/jars-9/
 gradle/android.lock
 gradle/native/
 gradle/wrapper/dists/
+app/release/*
 
 .gradle/8.7/executionHistory/
 .gradle/buildOutputCleanup/
