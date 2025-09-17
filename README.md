@@ -294,18 +294,27 @@ In **your** app (third-party), declare the queries so you can find the Pay App:
 
 ```java
 
-private void startUnreferencedRefund(long amountInCents) {
-    Intent intent = new Intent("com.multisafepay.ACTION_UNREFERENCED_REFUND");
-    intent.setPackage("com.multisafepay.pos.sunmi"); 
 
-    intent.putExtra("order_id", "UNREFUND_" + System.currentTimeMillis());
-    intent.putExtra("currency", "EUR");
-    intent.putExtra("amount", amountInCents);         
-    intent.putExtra("package_name", getPackageName()); 
-    intent.putExtra("refund", true);                   
+private void sendRefundIntent(long amountInCents) {
 
-    startActivity(intent);
+    Intent intent = this.getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
+    if (intent != null) {
+
+        String packageName = intent.getPackage();
+
+        intent.setClassName(
+                packageName, "com.multisafepay.pos.middleware.IntentActivity"
+        );
+
+        intent.putExtra("order_id", "REFUND" + System.currentTimeMillis());
+        intent.putExtra("amount", amountInCents);        
+        intent.putExtra("refund", true);                
+        intent.putExtra("package_name", this.getPackageName()); 
+
+        this.startActivity(intent);
+    }
 }
+
 
 ```
 
@@ -361,63 +370,3 @@ private void receivedCallbackIntent(String message) {
 }
 
 ```
-## **Subscribed / Recurring Payment**
-
-**Purpose:** Start the **first** subscription transaction directly from the terminal (tokenization).
-
-Subsequent charges are handled by your **backend via API** using the stored token.
-
----
-
-### **Flow**
-
-1. User selects “Recurring Payment” in your app.
-2. Prompt for:
-   - `Amount` (in EUR)
-   - `Shopper reference` (stable customer ID in your system)
-3. Build and send intent with:
-   - Base payment fields
-   - `recurring_model` = `"cardOnFile"`
-   - `reference` = shopper reference
-
----
-
-
-
-```java
-
-private void launchFirstSubscription(long amountCents, String shopperReference) {
-    Intent launch = getPackageManager().getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
-    if (launch == null) launch = getPackageManager().getLaunchIntentForPackage("com.phonepos.mspsoftposapp");
-    if (launch == null) {
-        Toast.makeText(this, "MSP Pay App not found (Sunmi/SoftPOS).", Toast.LENGTH_LONG).show();
-        return;
-    }
-
-    String packageName = launch.getPackage();
-    launch.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
-
- 
-    launch.putExtra("amount", amountCents);
-    launch.putExtra("currency", "EUR");
-    launch.putExtra("order_id", getOrderId()); 
-    launch.putExtra("description", "First subscription payment (App-to-App)");
-    launch.putExtra("package_name", getPackageName());
-
-  
-    launch.putExtra("recurring_model", "cardOnFile");
-    launch.putExtra("reference", shopperReference);
-
-    startActivity(launch);
-}
-
-```
-
----
-
-### **Notes**
-
-- **amount** must be sent as `long` in **cents.**
-- **shopperReference** must remain constant for the same customer to allow future recurring payments.
-- If the “Recurring Payment” toggle in the Pay App is **off**, the payment may be processed as normal (no token) or rejected depending on version/policy.
-- Callback handling is identical to normal payments — check `status` in `onNewIntent()`.
