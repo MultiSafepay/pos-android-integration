@@ -26,32 +26,23 @@ Both use the same App-to-App integration model.
 * `com.multisafepay.pos.sunmi` → SmartPOS (kernel devices)
 * `com.multisafepay.pos.nokernels` → Tap to Pay (non-kernel devices)
 
-For more information about package detection, refer to:
-https://developer.android.com/reference/android/content/pm/PackageManager
-
 ---
 
 ## Selecting the Pay App
 
-Depending on the device type, you must select the correct package:
-
 ```java
-String packageName;
-
-if (isTapToPayDevice()) {
-    packageName = "com.multisafepay.pos.nokernels";
-} else {
-    packageName = "com.multisafepay.pos.sunmi";
+private String getMSPPackage() {
+    if (isTapToPayDevice()) {
+        return "com.multisafepay.pos.nokernels";
+    } else {
+        return "com.multisafepay.pos.sunmi";
+    }
 }
-
-Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 ```
 
 ---
 
 ## Manifest Configuration
-
-Declare the Pay App packages in your `AndroidManifest.xml`:
 
 ```xml
 <manifest>
@@ -68,15 +59,10 @@ Declare the Pay App packages in your `AndroidManifest.xml`:
 
 ## Callback Handling
 
-The Pay App returns the transaction result via Intent.
-
-For more information, refer to:
-https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)
-
 ```java
 @Override
 protected void onNewIntent(Intent intent) {
-    this.processMSPMiddlewareResponse(intent);
+    processMSPMiddlewareResponse(intent);
     super.onNewIntent(intent);
 }
 
@@ -84,23 +70,23 @@ private void processMSPMiddlewareResponse(@NonNull Intent intent) {
     if (intent.hasExtra("status")) {
         int status = intent.getIntExtra("status", 0);
         String message = intent.getStringExtra("message");
-        this.handleMiddlewareCallback(status, message);
+        handleMiddlewareCallback(status, message);
     }
 }
 
 private void handleMiddlewareCallback(int status, String message) {
     switch (status) {
         case 875:
-            this.receivedCallbackIntent("EXCEPTION " + message);
+            receivedCallbackIntent("EXCEPTION " + message);
             break;
         case 471:
-            this.receivedCallbackIntent("COMPLETED " + message);
+            receivedCallbackIntent("COMPLETED " + message);
             break;
         case 17:
-            this.receivedCallbackIntent("CANCELLED " + message);
+            receivedCallbackIntent("CANCELLED " + message);
             break;
         case 88:
-            this.receivedCallbackIntent("DECLINED " + message);
+            receivedCallbackIntent("DECLINED " + message);
             break;
     }
 }
@@ -122,47 +108,52 @@ private void receivedCallbackIntent(String message) {
 #### Order Items
 
 ```java
+JSONArray jsonArray = new JSONArray();
+
 try {
-    jsonArray = new JSONArray();
+    JSONObject item1 = new JSONObject();
+    item1.put("name", "Product 1");
+    item1.put("unit_price", "0.10");
+    item1.put("quantity", "1");
+    item1.put("merchant_item_id", "749857");
+    item1.put("tax", "3.90");
 
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put("name", "Product 1");
-    jsonObject.put("unit_price", "0.10");
-    jsonObject.put("quantity", "1");
-    jsonObject.put("merchant_item_id", "749857");
-    jsonObject.put("tax", "3.90");
-    jsonArray.put(jsonObject);
+    JSONObject item2 = new JSONObject();
+    item2.put("name", "Product 2");
+    item2.put("unit_price", "0.20");
+    item2.put("quantity", "1");
+    item2.put("merchant_item_id", "749857");
+    item2.put("tax", "1.40");
 
-    jsonObject = new JSONObject();
-    jsonObject.put("name", "Product 2");
-    jsonObject.put("unit_price", "0.20");
-    jsonObject.put("quantity", "1");
-    jsonObject.put("merchant_item_id", "749857");
-    jsonObject.put("tax", "1.40");
-    jsonArray.put(jsonObject);
+    jsonArray.put(item1);
+    jsonArray.put(item2);
 
-} catch (JSONException jsonException) {
-    jsonException.printStackTrace();
+} catch (JSONException e) {
+    e.printStackTrace();
 }
 ```
+
+---
 
 #### Sending Payment Intent
 
 ```java
-Intent intent = this.context.getPackageManager()
-        .getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
+String packageName = getMSPPackage();
 
-String packageName = intent.getPackage();
-intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
+Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
 if (intent != null) {
+
+    intent.setClassName(packageName,
+        "com.multisafepay.pos.middleware.IntentActivity");
+
     intent.putExtra("items", jsonArray.toString());
     intent.putExtra("order_id", getOrderId());
     intent.putExtra("order_description", "info about the order");
     intent.putExtra("currency", "EUR");
-    intent.putExtra("amount", amount);
-    intent.putExtra("package_name", this.context.getPackageName());
-    this.context.startActivity(intent);
+    intent.putExtra("amount", amountInCents);
+    intent.putExtra("package_name", getPackageName());
+    startActivity(intent);
 }
 ```
 
@@ -173,9 +164,9 @@ if (intent != null) {
 #### Order Items
 
 ```java
-try {
-    jsonArray = new JSONArray();
+JSONArray jsonArray = new JSONArray();
 
+try {
     JSONObject socks = new JSONObject();
     socks.put("name", "Socks");
     socks.put("description", "One pair of black socks");
@@ -184,8 +175,6 @@ try {
     socks.put("quantity", 3);
     socks.put("tax_table_selector", "21_percent");
 
-    jsonArray.put(socks);
-
     JSONObject shipping = new JSONObject();
     shipping.put("name", "Shipping");
     shipping.put("description", "Domestic shipping (zone 1)");
@@ -193,33 +182,41 @@ try {
     shipping.put("unit_price", 0.15);
     shipping.put("quantity", 1);
 
+    jsonArray.put(socks);
     jsonArray.put(shipping);
 
-} catch (JSONException jsonException) {
-    jsonException.printStackTrace();
+} catch (JSONException e) {
+    e.printStackTrace();
 }
 ```
+
+---
 
 #### Sending Payment Intent
 
 ```java
-Intent intent = this.context.getPackageManager()
-        .getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
+String packageName = getMSPPackage();
 
-String packageName = intent.getPackage();
-intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
-
-setCheckoutOptions(intent);
+Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
 if (intent != null) {
+
+    intent.setClassName(packageName,
+        "com.multisafepay.pos.middleware.IntentActivity");
+
+    setCheckoutOptions(intent);
+
     intent.putExtra("items", jsonArray.toString());
     intent.putExtra("order_id", getOrderId());
     intent.putExtra("description", "info about the order");
     intent.putExtra("currency", "EUR");
-    intent.putExtra("amount", amount);
-    intent.putExtra("reference", "Ref-intent-1234-dani");
+    intent.putExtra("amount", amountInCents);
+
+    intent.putExtra("reference", "Ref-" + System.currentTimeMillis());
     intent.putExtra("auto_close", false);
     intent.putExtra("package_name", getPackageName());
+
+    startActivity(intent);
 }
 ```
 
@@ -242,6 +239,7 @@ private void setCheckoutOptions(Intent intent) {
         taxTables.put("default", defaultTaxTable);
 
         intent.putExtra("checkout_options", checkoutOptions.toString());
+
     } catch (JSONException e) {
         e.printStackTrace();
     }
@@ -252,28 +250,28 @@ private void setCheckoutOptions(Intent intent) {
 
 ## Unreferenced Refund Flow
 
-### Sending Refund Intent
-
 ```java
 private void sendRefundIntent(long amountInCents) {
 
-    Intent intent = this.getPackageManager()
-            .getLaunchIntentForPackage("com.multisafepay.pos.sunmi");
+    String packageName = getMSPPackage();
+
+    Intent intent = getPackageManager()
+            .getLaunchIntentForPackage(packageName);
 
     if (intent != null) {
 
-        String packageName = intent.getPackage();
-
         intent.setClassName(
-                packageName, "com.multisafepay.pos.middleware.IntentActivity"
+                packageName,
+                "com.multisafepay.pos.middleware.IntentActivity"
         );
 
-        intent.putExtra("order_id", "REFUND" + System.currentTimeMillis());
+        intent.putExtra("order_id", "REFUND_" + System.currentTimeMillis());
         intent.putExtra("amount", amountInCents);
-        intent.putExtra("refund", true);
-        intent.putExtra("package_name", this.getPackageName());
 
-        this.startActivity(intent);
+        intent.putExtra("refund", true);
+        intent.putExtra("package_name", getPackageName());
+
+        startActivity(intent);
     }
 }
 ```
