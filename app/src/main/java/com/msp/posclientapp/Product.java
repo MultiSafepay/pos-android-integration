@@ -8,7 +8,8 @@ public class Product {
 
     private JSONArray jsonArray;
 
-    void setProduct (IProduct product){
+    void setProduct (IProduct product, long amount){ //add amount as a paremeter
+
 
         //Hardcoded products, add as many as you want.
         //Pay attention to structure
@@ -43,6 +44,7 @@ public class Product {
             jsonException.printStackTrace();
         }
 
-        product.callMSPPayApp(jsonArray);
+        product.callMSPPayApp(jsonArray, amount);
+
     }
 }
