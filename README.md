@@ -30,9 +30,11 @@ Both use the same App-to-App integration model.
 
 ## Selecting the Pay App
 
+Use the correct package depending on the device type.
+
 ```java
-private String getMSPPackage() {
-    if (isTapToPayDevice()) {
+private String getMSPPackage(boolean isTapToPayDevice) {
+    if (isTapToPayDevice) {
         return "com.multisafepay.pos.nokernels";
     } else {
         return "com.multisafepay.pos.sunmi";
@@ -138,14 +140,20 @@ try {
 #### Sending Payment Intent
 
 ```java
-String packageName = getMSPPackage();
+boolean isTapToPayDevice = false; // Implement your own device detection
+String packageName = getMSPPackage(isTapToPayDevice);
 
 Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
 if (intent != null) {
 
-    intent.setClassName(packageName,
-        "com.multisafepay.pos.middleware.IntentActivity");
+    if (!isTapToPayDevice) {
+        intent.setClassName(packageName,
+            "com.multisafepay.pos.middleware.IntentActivity");
+    }
+
+    // amount must be long and expressed in minor units (for example: cents)
+    long amountInCents = amount;
 
     intent.putExtra("items", jsonArray.toString());
     intent.putExtra("order_id", getOrderId());
@@ -153,6 +161,7 @@ if (intent != null) {
     intent.putExtra("currency", "EUR");
     intent.putExtra("amount", amountInCents);
     intent.putExtra("package_name", getPackageName());
+
     startActivity(intent);
 }
 ```
@@ -195,23 +204,28 @@ try {
 #### Sending Payment Intent
 
 ```java
-String packageName = getMSPPackage();
+boolean isTapToPayDevice = false; // Implement your own device detection
+String packageName = getMSPPackage(isTapToPayDevice);
 
 Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
 if (intent != null) {
 
-    intent.setClassName(packageName,
-        "com.multisafepay.pos.middleware.IntentActivity");
+    if (!isTapToPayDevice) {
+        intent.setClassName(packageName,
+            "com.multisafepay.pos.middleware.IntentActivity");
+    }
 
     setCheckoutOptions(intent);
+
+    // amount must be long and expressed in minor units (for example: cents)
+    long amountInCents = amount;
 
     intent.putExtra("items", jsonArray.toString());
     intent.putExtra("order_id", getOrderId());
     intent.putExtra("description", "info about the order");
     intent.putExtra("currency", "EUR");
     intent.putExtra("amount", amountInCents);
-
     intent.putExtra("reference", "Ref-" + System.currentTimeMillis());
     intent.putExtra("auto_close", false);
     intent.putExtra("package_name", getPackageName());
@@ -251,23 +265,24 @@ private void setCheckoutOptions(Intent intent) {
 ## Unreferenced Refund Flow
 
 ```java
-private void sendRefundIntent(long amountInCents) {
+private void sendRefundIntent(long amountInCents, boolean isTapToPayDevice) {
 
-    String packageName = getMSPPackage();
+    String packageName = getMSPPackage(isTapToPayDevice);
 
     Intent intent = getPackageManager()
             .getLaunchIntentForPackage(packageName);
 
     if (intent != null) {
 
-        intent.setClassName(
-                packageName,
-                "com.multisafepay.pos.middleware.IntentActivity"
-        );
+        if (!isTapToPayDevice) {
+            intent.setClassName(
+                    packageName,
+                    "com.multisafepay.pos.middleware.IntentActivity"
+            );
+        }
 
         intent.putExtra("order_id", "REFUND_" + System.currentTimeMillis());
         intent.putExtra("amount", amountInCents);
-
         intent.putExtra("refund", true);
         intent.putExtra("package_name", getPackageName());
 
@@ -280,12 +295,24 @@ private void sendRefundIntent(long amountInCents) {
 
 ## Tap to Pay Notes
 
-Tap to Pay uses the same App-to-App integration as SmartPOS.
+Tap to Pay uses the same App-to-App integration model as SmartPOS, but the entry point is different.
 
 * Same Intent structure
 * Same parameters
 * Same callback handling
 
-The only difference is the package used:
+For **SmartPOS** (`com.multisafepay.pos.sunmi`), the payment flow is started directly via:
 
-`com.multisafepay.pos.nokernels`
+`com.multisafepay.pos.middleware.IntentActivity`
+
+For **Tap to Pay** (`com.multisafepay.pos.nokernels`), the app should be launched using the package launcher intent:
+
+`getLaunchIntentForPackage("com.multisafepay.pos.nokernels")`
+
+In this case, the app handles the incoming intent through its launcher flow before navigating to the payment screen.
+
+Important:
+* Use `setClassName(..., "com.multisafepay.pos.middleware.IntentActivity")` only for SmartPOS
+* Do not force `IntentActivity` for Tap to Pay
+* `amount` must be sent as `long` in minor units
+* `package_name` must be the package name of the third-party app that should receive the callback intent
