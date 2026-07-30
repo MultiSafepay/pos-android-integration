@@ -8,6 +8,7 @@
     <queries>
         <package android:name="com.multisafepay.pos.nokernels" />
         <package android:name="com.multisafepay.pos.sunmi" />
+        <package android:name="com.phonepos.mspsoftposapp" />
     </queries>
 
     <application
@@ -20,22 +21,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.POSClientApp"
         tools:targetApi="31">
+
         <activity
             android:name=".PaymentActivity"
-            android:exported="false" />
+            android:exported="true"
+            android:launchMode="singleTop" />
+
         <activity
             android:name=".TargetActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+    </application>
 </manifest>
