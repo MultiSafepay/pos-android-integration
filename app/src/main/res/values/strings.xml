@@ -6,4 +6,63 @@
     <string name="declined">Transaction declined!</string>
     <string name="pending">Pending...</string>
     <string name="use_e_commerce_flow">Use E-Commerce flow</string>
+    <string name="decline">Your transaction has been declined</string>
+    <string name="cancel">Your transaction has been canceled</string>
+    <string name="completed">Your transaction has been completed</string>
+    <string name="exception">There has been an error</string>
+    <string name="Decline">Your transaction has been declined, please try again</string>
+    <string name="send_ecomerce">"Sending e-commerce intent with amount: "</string>
+    <string name="shopping_cart">Shopping Cart</string>
+    <string name="clear_cart">Clear Cart</string>
+    <string name="checkout">Checkout</string>
+    <string name="available_products">Available Products</string>
+    <string name="cart_cleared">Cart cleared</string>
+    <string name="how_many">How many %1$s?</string>
+    <string name="quantity_hint">Quantity</string>
+    <string name="invalid_quantity">Invalid quantity</string>
+    <string name="cart_empty">The cart is empty</string>
+    <string name="transaction_status">Transaction status:</string>
+    <string name="payment_details">Payment Details</string>
+    <string name="message_label">Message:</string>
+    <string name="description_label">Description:</string>
+    <string name="cart_total_value">Total: €%.2f</string>
+    <string name="product_coffee">Coffee</string>
+    <string name="product_croissant">Croissant</string>
+    <string name="product_juice">Juice</string>
+    <string name="product_te">Té</string>
+    <string name="product_water">Water</string>
+    <string name="product_donut">Donut</string>
+    <string name="title_msp_intent">Using Intent to call MSP Pay App</string>
+    <string name="enable_alert_dialog">Enable Alert Dialog</string>
+    <string name="payment_cancelled_message">The payment has been cancelled</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="invalid_amount">Invalid amount</string>
+    <string name="manual_amount">Manual amount</string>
+    <string name="sunmi_app_not_found">Sunmi app not found</string>
+    <string name="softpos_not_found">SoftPOS not found</string>
+    <string name="softpos_launch_error">Error launching SoftPOS</string>
+    <string name="sunmi_app_missing">Sunmi app not found</string>
+
+    <string name="message">Message</string>
+    <string name="description">Description</string>
+    <string name="payment_successful">Payment completed</string>
+    <string name="payment_cancelled">Payment cancelled</string>
+    <string name="payment_unknown">Unknown result</string>
+    <string name="amount_invalid">Amount is missing or invalid!</string>
+    <string name="order_info">info about the order</string>
+    <string name="reference_prefix">POSCLIENT-</string>
+    <string name="reference_example">Ref-intent-1234-dani</string>
+    <string name="enter_amount_title">Enter Amount</string>
+
+
+    <string name="pay_with_sunmi">Sunmi</string>
+    <string name="pay_with_softpos">SoftPOS</string>
+    <string name="cart_total_initial">Total: €0.00</string>
+    <string name="unreferenced_refund">Unreferenced Refund</string>
+    <string name="recurring_payment">Recurring Payment</string>
+    <string name="payment_declined">Payment declined</string>
+    <string name="refund_not_available_softpos">Refunds are not available on this device yet (SoftPOS).</string>
+
 </resources>

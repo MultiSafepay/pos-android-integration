@@ -14,33 +14,45 @@ This repository describes how to integrate a third-party Android application wit
 
 The Pay App supports two execution environments:
 
-* **SmartPOS** → Devices with payment kernel (e.g. Sunmi)
-* **Tap to Pay** → Android devices without kernel, using NFC
+* **SmartPOS** → Devices with a payment kernel (most Sunmi terminals)
+* **SoftPOS (Tap to Pay)** → Devices without a payment kernel, using the device's own NFC reader — this covers pure Android/COTS (commercial off-the-shelf) hardware, but also certain Sunmi models that ship without kernel support (e.g. the L3)
 
-Both use the same App-to-App integration model.
+Both use App-to-App communication via Android Intents, but they are launched and called back differently — see [Selecting the Pay App](#selecting-the-pay-app), [Callback Handling](#callback-handling), and [SoftPOS Integration](#softpos-integration).
+
+> **Note:** "Sunmi" is not synonymous with "has a kernel." Some Sunmi models (e.g. the L3) don't have payment kernel support and must use SoftPOS instead of SmartPOS.
 
 ---
 
 ## Pay App Packages
 
 * `com.multisafepay.pos.sunmi` → SmartPOS (kernel devices)
-* `com.multisafepay.pos.nokernels` → Tap to Pay (non-kernel devices)
+* `com.phonepos.mspsoftposapp` → SoftPOS / Tap to Pay (non-kernel devices)
 
 ---
 
 ## Selecting the Pay App
 
-Use the correct package depending on the device type.
+The manufacturer alone doesn't tell you whether a device has a payment kernel — some Sunmi models (e.g. the L3) don't. Use manufacturer as a coarse pre-filter, but gate the actual decision on whether the SmartPOS Pay App is installed:
 
 ```java
-private String getMSPPackage(boolean isTapToPayDevice) {
-    if (isTapToPayDevice) {
-        return "com.multisafepay.pos.nokernels";
-    } else {
-        return "com.multisafepay.pos.sunmi";
+private boolean isSunmiDevice() {
+    return Build.MANUFACTURER != null && Build.MANUFACTURER.equalsIgnoreCase("sunmi");
+}
+
+private boolean isPackageInstalled(String packageName) {
+    try {
+        getPackageManager().getPackageInfo(packageName, 0);
+        return true;
+    } catch (Exception e) {
+        return false;
     }
 }
 ```
+
+* If the device is Sunmi **and** `com.multisafepay.pos.sunmi` is installed → launch SmartPOS directly (see [Payment Flows](#payment-flows)).
+* Otherwise (non-Sunmi hardware, or a Sunmi model without kernel support / without the SmartPOS Pay App installed) → launch SoftPOS (see [SoftPOS Integration](#softpos-integration)).
+
+The two Pay Apps are not interchangeable drop-in replacements for each other: SmartPOS is launched with `getLaunchIntentForPackage` + `setClassName`, while SoftPOS uses an explicit action and component. Treat them as two distinct integrations sharing the same general App-to-App model.
 
 ---
 
@@ -50,8 +62,8 @@ private String getMSPPackage(boolean isTapToPayDevice) {
 <manifest>
 
     <queries>
-        <package android:name="com.multisafepay.pos.nokernels" />
         <package android:name="com.multisafepay.pos.sunmi" />
+        <package android:name="com.phonepos.mspsoftposapp" />
     </queries>
 
 </manifest>
@@ -60,6 +72,10 @@ private String getMSPPackage(boolean isTapToPayDevice) {
 ---
 
 ## Callback Handling
+
+SmartPOS reports the result back to your app through `onNewIntent`. SoftPOS reports it through `onActivityResult` instead — see below.
+
+### SmartPOS Callback
 
 ```java
 @Override
@@ -101,9 +117,32 @@ private void receivedCallbackIntent(String message) {
 }
 ```
 
+### SoftPOS Callback
+
+SoftPOS is launched with `startActivityForResult` and never calls `onNewIntent` — it returns its result directly to `onActivityResult`:
+
+```java
+private static final int REQUEST_CODE_SOFTPOS = 1001;
+
+@Override
+protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (requestCode == REQUEST_CODE_SOFTPOS && resultCode == RESULT_OK && data != null) {
+        String status = data.getStringExtra("result_status"); // "COMPLETED" | "CANCELLED" | "DECLINED"
+        String message = data.getStringExtra("message");
+        String description = data.getStringExtra("description");
+
+        // update UI / clear cart based on status
+    }
+}
+```
+
 ---
 
 ## Payment Flows
+
+> The flows below use the **SmartPOS (Sunmi)** launch pattern — `getLaunchIntentForPackage` + `setClassName` + `startActivity`. For SoftPOS, see [SoftPOS Integration](#softpos-integration), which uses a different Intent action/component and `startActivityForResult`.
 
 ### 1. Standard (Legacy) Flow
 
@@ -140,17 +179,13 @@ try {
 #### Sending Payment Intent
 
 ```java
-boolean isTapToPayDevice = false; // Implement your own device detection
-String packageName = getMSPPackage(isTapToPayDevice);
-
+String packageName = "com.multisafepay.pos.sunmi";
 Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
 if (intent != null) {
 
-    if (!isTapToPayDevice) {
-        intent.setClassName(packageName,
-            "com.multisafepay.pos.middleware.IntentActivity");
-    }
+    intent.setClassName(packageName,
+        "com.multisafepay.pos.middleware.IntentActivity");
 
     // amount must be long and expressed in minor units (for example: cents)
     long amountInCents = amount;
@@ -204,17 +239,13 @@ try {
 #### Sending Payment Intent
 
 ```java
-boolean isTapToPayDevice = false; // Implement your own device detection
-String packageName = getMSPPackage(isTapToPayDevice);
-
+String packageName = "com.multisafepay.pos.sunmi";
 Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
 if (intent != null) {
 
-    if (!isTapToPayDevice) {
-        intent.setClassName(packageName,
-            "com.multisafepay.pos.middleware.IntentActivity");
-    }
+    intent.setClassName(packageName,
+        "com.multisafepay.pos.middleware.IntentActivity");
 
     setCheckoutOptions(intent);
 
@@ -265,21 +296,12 @@ private void setCheckoutOptions(Intent intent) {
 ## Unreferenced Refund Flow
 
 ```java
-private void sendRefundIntent(long amountInCents, boolean isTapToPayDevice) {
-
-    String packageName = getMSPPackage(isTapToPayDevice);
-
-    Intent intent = getPackageManager()
-            .getLaunchIntentForPackage(packageName);
+private void sendRefundIntent(long amountInCents) {
+    String packageName = "com.multisafepay.pos.sunmi";
+    Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
 
     if (intent != null) {
-
-        if (!isTapToPayDevice) {
-            intent.setClassName(
-                    packageName,
-                    "com.multisafepay.pos.middleware.IntentActivity"
-            );
-        }
+        intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
 
         intent.putExtra("order_id", "REFUND_" + System.currentTimeMillis());
         intent.putExtra("amount", amountInCents);
@@ -291,28 +313,82 @@ private void sendRefundIntent(long amountInCents, boolean isTapToPayDevice) {
 }
 ```
 
+> **Note:** Unreferenced refunds are currently only supported through the SmartPOS (Sunmi) Pay App. If the device isn't a Sunmi terminal, or the Sunmi Pay App isn't installed, hide or disable the refund action — SoftPOS does not support refunds yet.
+
 ---
 
-## Tap to Pay Notes
+## SoftPOS Integration
 
-Tap to Pay uses the same App-to-App integration model as SmartPOS, but the entry point is different.
+`com.phonepos.mspsoftposapp` is MultiSafepay's **SoftPOS (Tap to Pay)** Pay App — used on any device that doesn't have a payment kernel, turning the device's own NFC reader into a card terminal (COTS). This includes pure Android/COTS hardware as well as certain Sunmi models without kernel support (e.g. the L3). It's a different integration from SmartPOS: launched with an explicit action/component instead of `getLaunchIntentForPackage`, and it returns its result via `onActivityResult` instead of `onNewIntent`.
 
-* Same Intent structure
-* Same parameters
-* Same callback handling
+### Launching SoftPOS
 
-For **SmartPOS** (`com.multisafepay.pos.sunmi`), the payment flow is started directly via:
+```java
+private static final int REQUEST_CODE_SOFTPOS = 1001;
+private static final String SOFTPOS_PACKAGE = "com.phonepos.mspsoftposapp";
+private static final String SOFTPOS_ACTION_MANUAL_PAYMENT = "com.phonepos.mspsoftposapp.ACTION_MANUAL_PAYMENT";
+private static final String SOFTPOS_COMPONENT = "com.phonepos.mspsoftposapp.ManualPayInputActivity";
 
-`com.multisafepay.pos.middleware.IntentActivity`
+Intent softpos = new Intent(SOFTPOS_ACTION_MANUAL_PAYMENT);
+softpos.setClassName(SOFTPOS_PACKAGE, SOFTPOS_COMPONENT);
 
-For **Tap to Pay** (`com.multisafepay.pos.nokernels`), the app should be launched using the package launcher intent:
+// amount is a decimal string here, NOT a long in minor units
+softpos.putExtra("amount", String.format(Locale.US, "%.2f", amountInCents / 100.0));
+softpos.putExtra("order_id", getOrderId());
+softpos.putExtra("skip_manual_input", true);
+softpos.putExtra("package_name", getPackageName());
+softpos.putExtra("items", jsonArray.toString()); // optional
+softpos.putExtra("callback_activity", getClass().getName());
 
-`getLaunchIntentForPackage("com.multisafepay.pos.nokernels")`
-
-In this case, the app handles the incoming intent through its launcher flow before navigating to the payment screen.
+if (getPackageManager().resolveActivity(softpos, 0) != null) {
+    startActivityForResult(softpos, REQUEST_CODE_SOFTPOS);
+}
+```
 
 Important:
-* Use `setClassName(..., "com.multisafepay.pos.middleware.IntentActivity")` only for SmartPOS
-* Do not force `IntentActivity` for Tap to Pay
-* `amount` must be sent as `long` in minor units
-* `package_name` must be the package name of the third-party app that should receive the callback intent
+* `amount` is sent as a **decimal string** (e.g. `"1.50"`) — unlike SmartPOS, where `amount` is a `long` in minor units (cents).
+* SoftPOS must be launched with `startActivityForResult`, since it returns its result directly rather than calling back via a new `Intent` (see [SoftPOS Callback](#softpos-callback)).
+* Always check `resolveActivity(...)` before launching — if it returns `null`, SoftPOS isn't installed.
+* Unreferenced refunds are not currently supported on SoftPOS (see [Unreferenced Refund Flow](#unreferenced-refund-flow)).
+
+---
+
+## Recurring / Subscription Payments (Card on File)
+
+To start a card-on-file subscription (the shopper's card is tokenized for future off-session charges), send the same target-app Intent as a normal payment, plus `recurring_model` and `reference` extras.
+
+```java
+// SmartPOS (Sunmi)
+String packageName = "com.multisafepay.pos.sunmi";
+Intent intent = getPackageManager().getLaunchIntentForPackage(packageName);
+intent.setClassName(packageName, "com.multisafepay.pos.middleware.IntentActivity");
+intent.putExtra("amount", amountInCents);
+intent.putExtra("currency", "EUR");
+intent.putExtra("order_id", getOrderId());
+intent.putExtra("description", "First subscription payment");
+intent.putExtra("package_name", getPackageName());
+intent.putExtra("recurring_model", "cardOnFile");
+intent.putExtra("reference", shopperReference); // links future off-session charges to this payment
+
+startActivity(intent);
+```
+
+```java
+// SoftPOS
+Intent softpos = new Intent(SOFTPOS_ACTION_MANUAL_PAYMENT);
+softpos.setClassName(SOFTPOS_PACKAGE, SOFTPOS_COMPONENT);
+softpos.putExtra("amount", String.format(Locale.US, "%.2f", amountInCents / 100.0));
+softpos.putExtra("currency", "EUR");
+softpos.putExtra("order_id", getOrderId());
+softpos.putExtra("description", "First subscription payment");
+softpos.putExtra("skip_manual_input", true);
+softpos.putExtra("package_name", getPackageName());
+softpos.putExtra("callback_activity", getClass().getName());
+softpos.putExtra("recurring_model", "cardOnFile");
+softpos.putExtra("reference", shopperReference);
+
+startActivityForResult(softpos, REQUEST_CODE_SOFTPOS);
+```
+
+* `reference` is the shopper reference used to link future off-session charges to this first payment.
+* The result of this first payment is delivered through the same callback mechanism as a normal payment — `onNewIntent` for SmartPOS, `onActivityResult` for SoftPOS.
