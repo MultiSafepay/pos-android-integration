@@ -788,11 +788,11 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
                     " result=" + resultCode + " status=" + status);
 
             String displayStatus;
-            if ("success".equals(status)) {
+            if ("COMPLETED".equals(status)) {
                 displayStatus = getString(R.string.payment_successful);
-            } else if ("cancelled".equals(status)) {
+            } else if ("CANCELLED".equals(status)) {
                 displayStatus = getString(R.string.payment_cancelled);
-            } else if ("declined".equals(status)) {
+            } else if ("DECLINED".equals(status)) {
                 displayStatus = getString(R.string.payment_unknown);
             } else {
                 displayStatus = getString(R.string.payment_unknown);
@@ -807,9 +807,9 @@ public class PaymentActivity extends AppCompatActivity implements IProduct {
                     )
                     .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
                         dialog.dismiss();
-                        if ("success".equalsIgnoreCase(status)
-                                || "cancelled".equalsIgnoreCase(status)
-                                || "declined".equalsIgnoreCase(status)) {
+                        if ("COMPLETED".equalsIgnoreCase(status)
+                                || "CANCELLED".equalsIgnoreCase(status)
+                                || "DECLINED".equalsIgnoreCase(status)) {
                             clearCart();
                         }
                     })

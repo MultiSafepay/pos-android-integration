@@ -129,7 +129,7 @@ protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == REQUEST_CODE_SOFTPOS && resultCode == RESULT_OK && data != null) {
-        String status = data.getStringExtra("result_status"); // "success" | "cancelled" | "declined"
+        String status = data.getStringExtra("result_status"); // "COMPLETED" | "CANCELLED" | "DECLINED"
         String message = data.getStringExtra("message");
         String description = data.getStringExtra("description");
 
