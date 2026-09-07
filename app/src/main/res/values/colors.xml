@@ -5,6 +5,23 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Retail / demo POS palette -->
+    <color name="msp_navy">#FF0B1F33</color>
+    <color name="msp_navy_dark">#FF061525</color>
+    <color name="msp_accent">#FF1B6CA8</color>
+    <color name="msp_surface">#FFF4F6F8</color>
+    <color name="msp_surface_elevated">#FFFFFFFF</color>
+    <color name="msp_divider">#FFE2E8EE</color>
+    <color name="msp_text_secondary">#FF5C6B7A</color>
+
+    <!-- Payment status colors -->
+    <color name="status_completed">#FF2E7D32</color>
+    <color name="status_cancelled">#FF757575</color>
+    <color name="status_declined">#FFC62828</color>
+    <color name="status_exception">#FFEF6C00</color>
+    <color name="status_unknown">#FF546E7A</color>
 </resources>

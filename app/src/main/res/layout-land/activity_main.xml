@@ -1,45 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="12dp"
-    android:fillViewport="true"
+    android:orientation="vertical"
+    android:background="@color/msp_surface"
+    android:padding="24dp"
+    android:gravity="center_horizontal"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="48dp"
+        android:text="@string/app_name"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/msp_navy"
+        android:gravity="center" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title_msp_intent"
-            android:layout_marginTop="20dp"
-            android:padding="12dp"
-            android:textSize="16sp"
-            android:textColor="@color/design_default_color_primary_dark"
-            android:gravity="center" />
+    <TextView
+        android:id="@+id/launcher_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/launcher_subtitle"
+        android:textSize="15sp"
+        android:textColor="@color/msp_text_secondary"
+        android:gravity="center" />
 
-        <!-- Botón para terminal Sunmi -->
-        <Button
-            android:id="@+id/sunmipospayment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/pay_with_sunmi"
-            android:textSize="14sp"
-            android:layout_marginTop="12dp"
-            android:visibility="gone" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sunmipospayment"
+        style="@style/Widget.POSClient.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/pay_with_sunmi_label"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:backgroundTint="@color/msp_navy"
+        app:cornerRadius="12dp" />
 
-        <!-- Botón para terminal SoftPOS -->
-        <Button
-            android:id="@+id/softpayment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/pay_with_softpos"
-            android:textSize="14sp"
-            android:layout_marginTop="12dp"
-            android:visibility="gone" />
-    </LinearLayout>
-</ScrollView>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/softpayment"
+        style="@style/Widget.POSClient.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/pay_with_softpos_label"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:backgroundTint="@color/msp_navy"
+        app:cornerRadius="12dp" />
+
+</LinearLayout>

@@ -1,98 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
+    android:orientation="vertical"
+    android:background="@color/msp_surface"
     tools:context=".PaymentActivity">
 
-    <LinearLayout
-        android:id="@+id/root_layout"
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:text="@string/title_payment_screen"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/msp_navy"
+        android:gravity="center"
+        android:paddingTop="14dp"
+        android:paddingBottom="4dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp" />
 
-        <TextView
-            android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/advanced_toggle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/advanced_options_show"
+        android:textSize="13sp"
+        android:textColor="@color/msp_accent"
+        android:gravity="center"
+        android:paddingBottom="8dp"
+        android:paddingTop="2dp" />
+
+    <LinearLayout
+        android:id="@+id/advanced_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="8dp"
+        android:visibility="gone">
+
+        <Switch
+            android:id="@+id/product_toggle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/title_msp_intent"
-            android:textSize="18sp"
-            android:padding="10dp"
-            android:textStyle="bold"
-            android:gravity="center" />
+            android:layout_weight="1"
+            android:text="@string/use_e_commerce_flow"
+            android:textSize="12sp" />
 
-        <!-- Top controls: toggles -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Switch
+            android:id="@+id/alert_dialog_toggle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingBottom="12dp">
+            android:layout_weight="1"
+            android:text="@string/enable_alert_dialog"
+            android:textSize="12sp" />
+    </LinearLayout>
 
-            <Switch
-                android:id="@+id/product_toggle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/use_e_commerce_flow" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
 
-            <Switch
-                android:id="@+id/alert_dialog_toggle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/enable_alert_dialog" />
-        </LinearLayout>
-
-        <!-- Product quantity controls -->
         <LinearLayout
-            android:id="@+id/product_buttons_container"
+            android:id="@+id/root_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:paddingBottom="12dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/available_products"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
-        </LinearLayout>
+                style="@style/TextAppearance.POSClient.Section"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="4dp" />
 
-        <!-- Cart section -->
-        <LinearLayout
-            android:id="@+id/cart_section"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp">
+            <LinearLayout
+                android:id="@+id/product_buttons_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/shopping_cart"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                style="@style/TextAppearance.POSClient.Section"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="4dp" />
 
             <LinearLayout
-                android:id="@+id/product_list"
+                android:id="@+id/cart_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:background="@color/msp_surface_elevated"
+                android:padding="10dp">
 
-        <!-- Cart total + clear -->
+                <LinearLayout
+                    android:id="@+id/product_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/cart_empty_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cart_empty"
+                    android:textSize="13sp"
+                    android:textColor="@color/msp_text_secondary"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manual_amount_button"
+                style="@style/Widget.POSClient.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/manual_amount" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUnreferencedRefund"
+                style="@style/Widget.POSClient.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/unreferenced_refund" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFirstSubscription"
+                style="@style/Widget.POSClient.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/recurring_payment" />
+
+            <!-- Kept for PaymentActivity findViewById; status lives in dialog -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/transaction_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/transaction_status" />
+
+                <TextView
+                    android:id="@+id/transaction_status_callback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Sticky checkout bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/msp_surface_elevated"
+        android:elevation="8dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="12dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp">
+            android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/cart_total"
@@ -100,95 +198,44 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/cart_total_initial"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:paddingStart="4dp" />
+                android:textColor="@color/msp_navy" />
 
-            <Button
+            <TextView
+                android:id="@+id/payment_mode_chip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_mode_chip"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/msp_navy"
+                android:text="@string/pay_with_softpos_label" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/clear_cart_button"
+                style="@style/Widget.POSClient.Button.Text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/clear_cart"
-                android:textStyle="bold"
-                android:textAllCaps="false"
-                android:layout_marginEnd="4dp" />
+                android:text="@string/clear_cart" />
         </LinearLayout>
 
-        <!-- Actions -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/checkout"
+            style="@style/Widget.POSClient.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/checkout"
-            android:layout_marginTop="4dp"
+            android:text="@string/checkout_add_items"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textAllCaps="false"
-            android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/manual_amount_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/manual_amount"
-            android:layout_marginTop="8dp"
-            android:textStyle="bold"
-            android:textAllCaps="false"
-            android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/btnUnreferencedRefund"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/unreferenced_refund"
-            android:layout_marginTop="8dp"
-            android:textStyle="bold"
-            android:textAllCaps="false"
-            android:textSize="16sp" />
-
-        <!-- First subscription button (used by code) -->
-        <Button
-            android:id="@+id/btnFirstSubscription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/recurring_payment"
-            android:layout_marginTop="8dp"
-            android:textStyle="bold"
-            android:textAllCaps="false"
-            android:textSize="16sp" />
-
-        <!-- Transaction status -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:paddingTop="12dp">
-
-            <TextView
-                android:id="@+id/transaction_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/transaction_status"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/transaction_status_callback"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:layout_marginStart="8dp"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:paddingTop="4dp"
-            android:gravity="center"
-            android:textSize="14sp" />
-
+            android:enabled="false"
+            android:textColor="@color/checkout_button_text"
+            app:backgroundTint="@color/checkout_button_bg" />
     </LinearLayout>
-</ScrollView>
+
+</LinearLayout>
