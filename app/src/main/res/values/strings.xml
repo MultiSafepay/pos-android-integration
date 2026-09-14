@@ -2,7 +2,7 @@
     <string name="app_name">POSClientApp</string>
     <string name="err">Transaction Error!</string>
     <string name="success">Transaction completed!</string>
-    <string name="cancelled">Transaction casncelled!</string>
+    <string name="cancelled">Transaction cancelled!</string>
     <string name="declined">Transaction declined!</string>
     <string name="pending">Pending...</string>
     <string name="use_e_commerce_flow">Use E-Commerce flow</string>
@@ -12,9 +12,11 @@
     <string name="exception">There has been an error</string>
     <string name="Decline">Your transaction has been declined, please try again</string>
     <string name="send_ecomerce">"Sending e-commerce intent with amount: "</string>
+
     <string name="shopping_cart">Shopping Cart</string>
     <string name="clear_cart">Clear Cart</string>
     <string name="checkout">Checkout</string>
+    <string name="checkout_add_items">Add items to checkout</string>
     <string name="available_products">Available Products</string>
     <string name="cart_cleared">Cart cleared</string>
     <string name="how_many">How many %1$s?</string>
@@ -26,13 +28,30 @@
     <string name="message_label">Message:</string>
     <string name="description_label">Description:</string>
     <string name="cart_total_value">Total: €%.2f</string>
+
     <string name="product_coffee">Coffee</string>
     <string name="product_croissant">Croissant</string>
     <string name="product_juice">Juice</string>
-    <string name="product_te">Té</string>
+    <string name="product_te">Tea</string>
     <string name="product_water">Water</string>
     <string name="product_donut">Donut</string>
+
+    <!-- High-amount test products (intentional expensive items for live QA) -->
+    <string name="product_laptop">Coffee Machine</string>
+    <string name="product_diamond_chocolate">Catering Package</string>
+
     <string name="title_msp_intent">Using Intent to call MSP Pay App</string>
+    <string name="title_payment_screen">Demo checkout</string>
+    <string name="launcher_subtitle">Demo POS client</string>
+    <string name="launcher_subtitle_smartpos">Continue to SmartPOS checkout</string>
+    <string name="launcher_subtitle_softpos">Continue to SoftPOS / Tap to Pay checkout</string>
+    <string name="pay_with_sunmi_label">SmartPOS</string>
+    <string name="pay_with_softpos_label">Tap to Pay</string>
+    <string name="advanced_options_show">Show advanced options</string>
+    <string name="advanced_options_hide">Hide advanced options</string>
+    <string name="cart_line_meta">€%1$.2f × %2$d</string>
+    <string name="product_price_format">€%1$.2f</string>
+
     <string name="enable_alert_dialog">Enable Alert Dialog</string>
     <string name="payment_cancelled_message">The payment has been cancelled</string>
 
@@ -54,8 +73,23 @@
     <string name="order_info">info about the order</string>
     <string name="reference_prefix">POSCLIENT-</string>
     <string name="reference_example">Ref-intent-1234-dani</string>
-    <string name="enter_amount_title">Enter Amount</string>
 
+    <string name="enter_amount_title">Enter Amount</string>
+    <string name="enter_amount_euros_title">Enter amount (€)</string>
+    <string name="enter_refund_amount_title">Enter refund amount (€)</string>
+    <string name="first_subscription_title">Recurring payment</string>
+    <string name="enter_shopper_reference">Enter shopper reference</string>
+    <string name="enter_amount_and_reference">Enter amount and shopper reference</string>
+    <string name="shopper_reference_hint">Shopper reference</string>
+    <string name="amount_hint">Amount (€)</string>
+    <string name="continue_button">Continue</string>
+    <string name="shopper_reference_required">Shopper reference is required</string>
+    <string name="amount_and_reference_required">Amount and shopper reference are required</string>
+    <string name="invalid_refund_amount">Invalid refund amount</string>
+    <string name="invalid_number_format">Invalid number format</string>
+    <string name="msp_pay_app_not_found">MSP Pay App not found</string>
+    <string name="mode_smartpos">SmartPOS</string>
+    <string name="mode_softpos">SoftPOS</string>
 
     <string name="pay_with_sunmi">Sunmi</string>
     <string name="pay_with_softpos">SoftPOS</string>
@@ -63,6 +97,12 @@
     <string name="unreferenced_refund">Unreferenced Refund</string>
     <string name="recurring_payment">Recurring Payment</string>
     <string name="payment_declined">Payment declined</string>
-    <string name="refund_not_available_softpos">Refunds are not available on this device yet (SoftPOS).</string>
 
+    <string name="status_label_completed">Completed</string>
+    <string name="status_label_cancelled">Cancelled</string>
+    <string name="status_label_declined">Declined</string>
+    <string name="status_label_exception">Exception</string>
+    <string name="status_label_unknown">Unknown</string>
+
+    <string name="refund_not_available_softpos">Refunds are not available on this device yet (SoftPOS).</string>
 </resources>
